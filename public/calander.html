@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<script type="text/javascript" src="lib/jquery/jquery-1.5.1.min.js"></script>
+	<script type="text/javascript" src="lib/underscore-min.js"></script>
+	<script type="text/javascript" src="lib/store.js"></script>
+	<style>
+	
+		#nav {
+			height:50px;
+			width:100%;
+			background:pink;
+			position:fixed;
+			top:0;
+			left:0;
+		}
+		#nav ul {
+			list-style-type:none;
+		}
+		#nav ul li {
+			display:inline;
+			margin-left:100px;
+		}
+		td:not(:last-of-type) {border-right:1px dotted #333}
+		td {width:200px;height:100px;text-align:center}
+		
+		table {
+				margin-top:60px;
+		    font: 90%/1.5em "Lucida Grande", Geneva,
+		                    "DejaVu Sans", "Bitstream Vera Sans", AnjaliOldLipi,
+		                    "Lucida sans", "Trebuchet MS", Arial, Verdana;
+		    text-align: center;
+		    border: 4px black double;
+		    border-spacing: 0;
+		    -moz-border-radius: 8px;
+		    -webkit-border-radius: 8px;
+		    border-radius: 8px;
+				border-top-left-radius:50px;
+		    background: #b59d5c
+		}
+		tr:nth-child(odd) {
+		    background: #c1c2c3
+		}
+
+		tr:nth-child(even) {
+		    color: #6a3d37
+		}
+		tr:first-of-type td{height:50px}
+		td:first-of-type{width:95px}
+		tr:first-of-type td:first-of-type {border-top-left-radius:50px;}
+		tr:first-of-type td:last-of-type{border-top-right-radius: 8px;}
+	</style>
+	
+</head>
+
+<body onload="mealPlanet.init()">
+	<div id="nav">
+		<ul>
+			<li>
+				<a href="javascript:$('#cal').empty();mealPlanet.init();_.each(cal.rows, function(row){_.each(row.cells, function(cell){if(cell.cellIndex != new Date().getDay()+1 && cell.cellIndex != 0 ){$(cell).hide()}})})">Today</a>
+			</li>
+			<li>
+				<a href="javascript:$('#cal').empty();mealPlanet.init();_.each(cal.rows, function(row){_.each(row.cells, function(cell){if(cell.cellIndex != new Date().getDay()+2 && cell.cellIndex != 0 ){$(cell).hide()}})})">Tomorrow</a>
+			</li>
+			<li>
+				<a href="javascript:$('#cal').empty();mealPlanet.init()">Week</a>	
+			</li>
+			<li>
+				<a href="http://127.0.0.1:3001/">Pantry</a>
+			</li>
+			<li>
+				Meals
+			</li>
+			<li>
+				Recipes
+			</li>
+		</ul>
+	</div>
+	<table id="cal">
+		<tbody>
+			
+		</tbody>
+	</table>
+</body>
+
+<script type="text/javascript">
+
+mealPlanet = {
+	funTown : function(obj){
+		//var menu = store.get('menu') || [];
+		menu[obj.parentNode.rowIndex][obj.cellIndex] = obj.innerHTML
+		store.set('menu', menu)
+	},
+	init: function(){
+		cal = document.getElementById('cal');
+		menu = store.get('menu')? store.get('menu') : [];
+		rowCount = store.get('rowCount') || 4;
+		for (var i=0;i<rowCount;++i){
+			var row = cal.insertRow(0);
+			for (var j=0;j<7;++j){
+				var cell = row.insertCell(0);
+				cell.setAttribute('contenteditable','true');
+			};
+		}
+
+		if (!store.get('menu')){
+			var obj = [];
+			for (var i = 0; i < rowCount; ++i){
+				menu.push([]);
+			}
+			days = ['','Sunday','Monday','Tuesday','Wednesday','Friday','Saturday','Sunday'];
+			meals = ['breakfast','lunch','dinner'];
+			_.each(cal.rows[0].cells, function(cell, index) {menu[0][cell.cellIndex] = days[index]})
+			for (var i = 1; i<4; ++i )
+			menu[i][0] = menu[i][0] = meals[i-1];
+			
+		}
+		
+
+/*	
+		_.each($('td'), function(e){
+			if (e.cellIndex != 0 && e.parentNode.rowIndex != 0)
+			{$(e).css({'background':'rgba(158, 217, 225, 1)	', 'text-align':'left','padding':'1em'})}
+			else $(e).css('background','rgba(224, 158, 225, 1)'	)
+		})
+//*** Skew top row poopf
+/*		
+		_.each($('tr'), function(r){
+			if (r.rowIndex == 0)
+			$(r).css({
+				width: 200,
+				height: 100,
+				'-webkit-transform': 'skew(-20deg)',
+				   '-moz-transform': 'skew(-20deg)',
+				     '-o-transform': 'skew(-20deg)',
+				background: 'pink'
+			})
+		})
+*/		
+		_.each(menu, function(obj,i){
+			for (var a = obj.length; a >= 0; --a){
+				var me = cal.rows[i].cells[a]
+				$(me).html(obj[a])
+			}
+		})
+		
+		function funTown(obj){
+			//var menu = store.get('menu') || [];
+			menu[obj.parentNode.rowIndex][obj.cellIndex] = obj.innerHTML
+			store.set('menu', menu)
+		};
+		$('td').blur(function(e){
+			window.clearInterval(i)
+				funTown(this);
+		});
+		$('td').focus(function(e){
+			var that = this;
+			i = window.setInterval((function(){funTown(that)}), 250);
+		})
+	}
+}
+</script>
+
+</html>
