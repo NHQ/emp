@@ -1,7 +1,10 @@
 h1 MEAL PLANET
+a(href="calander.html") >>> Calander <<<
+br
+br
 form(action="/pantry", method="post")
 	div Ingredient: 
-		input(type="text", name="ingredient")
+		input(type="text", name="ingredient", style="width:200px")
 		select(name="type", class="chzn-select")
 			option(value="dairy") Food Staples
 			option(value="dairy") Dairy
@@ -14,7 +17,7 @@ form(action="/pantry", method="post")
 			option(value="oils") Oils
 			option(value="vinegars") Vinegars
 	div Quantity: 
-		input(type="text", name="quantity")
+		input(type="text", name="quantity", style="width:200px")
 		select(name="measure", class="chzn-select")
 			option(value="grams") Grams
 			option(value="ounces") Ounces
